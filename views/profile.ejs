@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= profileUser.name %> - Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background: #f3f2ef;
+        }
+        .navbar {
+            background: white;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .navbar h1 {
+            color: #0a66c2;
+        }
+        .nav-links a {
+            margin-left: 15px;
+            text-decoration: none;
+            background: #0a66c2;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        .profile-header {
+            background: white;
+            padding: 40px 5%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: #0a66c2;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+        .profile-name {
+            font-size: 28px;
+            color: #0a66c2;
+            margin-bottom: 10px;
+        }
+        .profile-bio {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0a66c2;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .info-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .post-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 3px solid #0a66c2;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>LinkedIn Clone</h1>
+        <div class="nav-links">
+            <a href="/home">Home</a>
+            <% if (currentUser === profileUser.name) { %>
+                <a href="/edit-profile">Edit Profile</a>
+            <% } %>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="profile-header">
+        <div class="profile-avatar">
+            <%= profileUser.name.charAt(0).toUpperCase() %>
+        </div>
+        <h1 class="profile-name"><%= profileUser.name %></h1>
+        <% if (profileUser.bio) { %>
+            <p class="profile-bio"><%= profileUser.bio %></p>
+        <% } %>
+        <div class="profile-stats">
+            <div class="stat">
+                <div class="stat-number"><%= posts.length %></div>
+                <div>Posts</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">0</div>
+                <div>Connections</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">
+                    <%= posts.reduce((total, post) => total + post.likesCount, 0) %>
+                </div>
+                <div>Likes</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Personal Info -->
+        <div>
+            <div class="card">
+                <h3>Personal Information</h3>
+                
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div><%= profileUser.email || 'Not provided' %></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Education</div>
+                    <div><%= profileUser.education || 'Not provided' %></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Gender</div>
+                    <div><%= profileUser.gender || 'Not specified' %></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Age</div>
+                    <div><%= profileUser.age || 'Not specified' %></div>
+                </div>
+
+                <% if (profileUser.certifications.length > 0) { %>
+                    <div class="info-item">
+                        <div class="info-label">Certifications</div>
+                        <div>
+                            <% profileUser.certifications.forEach(cert => { %>
+                                <div style="background: #e3f2fd; padding: 5px 10px; border-radius: 15px; margin: 5px 0; display: inline-block;">
+                                    <%= cert %>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- User Posts -->
+        <div>
+            <div class="card">
+                <h3>Recent Posts</h3>
+                
+                <% if (posts.length === 0) { %>
+                    <p>No posts yet.</p>
+                <% } else { %>
+                    <% posts.forEach(post => { %>
+                        <div class="post-item">
+                            <div style="margin-bottom: 10px;">
+                                <%= post.content %>
+                            </div>
+                            <% if (post.image) { %>
+                                <img src="<%= post.image %>" style="max-width: 100%; border-radius: 5px; margin: 10px 0;">
+                            <% } %>
+                            <% if (post.video) { %>
+                                <video controls style="max-width: 100%; border-radius: 5px; margin: 10px 0;">
+                                    <source src="<%= post.video %>">
+                                </video>
+                            <% } %>
+                            <div style="font-size: 12px; color: #666;">
+                                <%= new Date(post.createdAt).toLocaleString() %> • 
+                                👍 <%= post.likesCount %> likes • 
+                                💬 <%= post.comments.length %> comments
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

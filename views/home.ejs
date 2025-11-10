@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Clone - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background: #f3f2ef;
+        }
+        .navbar {
+            background: white;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .navbar h1 {
+            color: #0a66c2;
+        }
+        .nav-links a {
+            margin-left: 15px;
+            text-decoration: none;
+            background: #0a66c2;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .post-form textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .post-form button {
+            background: #0a66c2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #0a66c2;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .post-content {
+            margin: 15px 0;
+        }
+        .post-media img, .post-media video {
+            max-width: 100%;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .post-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+        }
+        .action-btn.liked {
+            color: #0a66c2;
+            font-weight: bold;
+        }
+        .comments-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .comment-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .comment-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+        }
+        .comment-btn {
+            background: #0a66c2;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .comment {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .file-upload {
+            margin: 10px 0;
+        }
+        .file-upload label {
+            background: #f3f2ef;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>LinkedIn Clone</h1>
+        <div class="nav-links">
+            <span>Welcome, <%= name %></span>
+            <a href="/edit-profile">Edit Profile</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="card">
+                <h3>Your Profile</h3>
+                <p><a href="/profile/<%= name %>" style="color: #0a66c2;">View Profile</a></p>
+                <div style="margin-top: 15px;">
+                    <div>Posts: <%= posts.filter(post => post.username === name).length %></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Create Post -->
+            <div class="card">
+                <h3>Create Post</h3>
+                <form class="post-form" action="/create-post" method="POST" enctype="multipart/form-data">
+                    <textarea name="content" placeholder="What's on your mind?" required></textarea>
+                    
+                    <div class="file-upload">
+                        <label>
+                            📷 Image
+                            <input type="file" name="image" accept="image/*" style="display: none;">
+                        </label>
+                        <label>
+                            🎥 Video
+                            <input type="file" name="video" accept="video/*" style="display: none;">
+                        </label>
+                    </div>
+                    
+                    <button type="submit">Post</button>
+                </form>
+            </div>
+
+            <!-- Posts Feed -->
+            <h3 style="margin-bottom: 15px;">Recent Posts</h3>
+            
+            <% if (posts.length === 0) { %>
+                <div class="card">
+                    <p>No posts yet. Be the first to post!</p>
+                </div>
+            <% } %>
+            
+            <% posts.forEach(post => { %>
+                <div class="card">
+                    <!-- Post Header -->
+                    <div class="post-header">
+                        <div class="user-avatar" onclick="goToProfile('<%= post.username %>')">
+                            <%= post.username.charAt(0).toUpperCase() %>
+                        </div>
+                        <div>
+                            <strong onclick="goToProfile('<%= post.username %>')" style="cursor: pointer; color: #0a66c2;">
+                                <%= post.username %>
+                            </strong>
+                            <div style="font-size: 12px; color: #666;">
+                                <%= new Date(post.createdAt).toLocaleString() %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post Content -->
+                    <div class="post-content">
+                        <%= post.content %>
+                    </div>
+
+                    <!-- Post Media -->
+                    <% if (post.image) { %>
+                        <div class="post-media">
+                            <img src="<%= post.image %>" alt="Post image">
+                        </div>
+                    <% } %>
+                    
+                    <% if (post.video) { %>
+                        <div class="post-media">
+                            <video controls width="100%">
+                                <source src="<%= post.video %>">
+                            </video>
+                        </div>
+                    <% } %>
+
+                    <!-- Post Actions -->
+                    <div class="post-actions">
+                        <form action="/like-post/<%= post._id %>" method="POST" style="display: inline;">
+                            <button type="submit" class="action-btn <%= post.likes.includes(currentUser) ? 'liked' : '' %>">
+                                👍 Like (<%= post.likesCount %>)
+                            </button>
+                        </form>
+                        
+                        <button class="action-btn" onclick="toggleComments('<%= post._id %>')">
+                            💬 Comment (<%= post.comments.length %>)
+                        </button>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="comments-section" id="comments-<%= post._id %>" style="display: none;">
+                        <form class="comment-form" action="/comment-post/<%= post._id %>" method="POST">
+                            <input type="text" name="comment" class="comment-input" placeholder="Write a comment..." required>
+                            <button type="submit" class="comment-btn">Post</button>
+                        </form>
+
+                        <% post.comments.forEach(comment => { %>
+                            <div class="comment">
+                                <strong><%= comment.username %></strong>
+                                <p><%= comment.content %></p>
+                                <small><%= new Date(comment.createdAt).toLocaleString() %></small>
+                            </div>
+                        <% }) %>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="sidebar">
+            <div class="card">
+                <h3>Trending</h3>
+                <p>• Professional Tips</p>
+                <p>• Industry News</p>
+                <p>• Networking Events</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleComments(postId) {
+            const section = document.getElementById('comments-' + postId);
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function goToProfile(username) {
+            window.location.href = '/profile/' + username;
+        }
+
+        // File upload label updates
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener('change', function(e) {
+                const label = this.parentElement;
+                if (this.files[0]) {
+                    label.style.background = '#0a66c2';
+                    label.style.color = 'white';
+                } else {
+                    label.style.background = '#f3f2ef';
+                    label.style.color = 'black';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
